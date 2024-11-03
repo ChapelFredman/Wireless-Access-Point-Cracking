@@ -68,7 +68,7 @@ This will display a list of wireless networks, their BSSIDs (MAC addresses), cha
 
 2.3 We'll start the "Sniffing" process again, however, we're only going to "Sniff" one access point.
    ```bash
-   airodump-ng -c <Channel> ---bssid <MAC address> -w <File name> wlan <name of the wireless interface>
+   airodump-ng -c <Channel> ---bssid <MAC address> -w <file name that we're going to write all of this in> wlan <name of the wireless interface>
 
    ```   
 
@@ -82,12 +82,23 @@ How-to: Use aireplay-ng to send de-authentication frames to the target network, 
 
    ```
    the - 0 0 means it'll send de authentication packets indefinitely until we control C the program  and then it'll stop de authenticating. 
-   
+
+3.2 Ctrl + C after a few seconds/minutes so it discconects devices from the WAP.
+
 #### 4. Capturing Handshake:
 Tool: airodump-ng
 Purpose: To capture the four-way handshake during re-authentication.
 How-to: Continue running airodump-ng with the target network's channel and BSSID to capture the handshake.
 
+4.1 After the De-authentication some devices will try to reconnect to the WAP, so go back to step 2.3 and "Sniff" the access point.
+
+4.2 When someone connects it, well catch the WPA 2 Handshakes with the hashed value of the Password.
+
+4.3 When you see the WPA Handshake, ctrl + C this program.
+
+4.4 Youll see that you have 4 different files on your desktop, well only use the one that ends with *.cap*
+    Inside of it is the 4-way handshake with the hash value of the password.
+    
 #### 5. Cracking the Hash:
 Tools: aircrack-ng or hashcat
 Purpose: To break the hashed password.
