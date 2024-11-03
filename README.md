@@ -19,52 +19,57 @@ To capture and decrypt a Wi-Fi access point’s password hash by leveraging moni
 #### 1. Enable Monitor Mode:
 To start, ensure you have a compatible wireless card that supports **Monitor Mode**. This allows you to capture packets from surrounding networks without connecting to them. Run the following commands:
 
-1. Identify your wireless card:
+1.1 Identify your wireless card:
+   
     
-    ```bash
+```bash
     
     ifconfig
     iwconfig
     
-    ```
+```
     
-2. Set the wireless card to **Monitor Mode**:
+1.2 Set the wireless card to **Monitor Mode**:
     
-    ```bash
+```bash
     
     sudo ifconfig <interface> down
     sudo iwconfig <interface> mode monitor
     sudo ifconfig <interface> up
     
-    ```
-  ##### 1.5. Enable Monitor mode with *airmon-ng*
+```
+#### *** Enable Monitor mode with *airmon-ng*
   Sometimes we get error while changing the card mode with the lasts steps, so we can do it with   airmon-ng:
    ```bash
    sudo airmon-ng start <interface>
 
    ```
-  ###### 1. Sometimes there are Processes that might interfere with setting monitor mode. When that's the case we have to *Kill Conflict Processes*
+  ##### 1. Sometimes there are Processes that might interfere with setting monitor mode. When that's the case we have to *Kill Conflict Processes*
    ```bash
    sudo airmon-ng check kill
 
    ```
  
-3. Verify with `iwconfig`.
+1.3 Verify with `iwconfig`.
 
 
 #### 2. Network Discovery:
 Now that your wireless card is in Monitor Mode, you can start capturing network traffic, specifically aiming to intercept a **four-way handshake** from a target wireless access point (AP).
 
-1. We'll use the next command to "Sniff" all the wireless access points around you.
+2.1 We'll use the next command to "Sniff" all the wireless access points around you.
    ```bash
    airodump-ng <interface>
 
    ```
 This will display a list of wireless networks, their BSSIDs (MAC addresses), channels, and other information.
 
-2. Choose a network to target. Note its BSSID and channel. (copy them to some note)
+2.2 Choose a network to target. Note its BSSID and channel. (copy them to some note)
    Ctrl + C when you found the Wireless network
-   --------------------------------------------------------------------------
+
+2.3 We'll start the "Sniffing" process again, however, we're only going to "Sniff" one access point.
+    ```bash
+    airodump-ng -c <Channel> ---BSS
+
 #### 3. De-authentication Attack:
 Tool: aireplay-ng
 Purpose: To force devices to re-authenticate, capturing the handshake.
