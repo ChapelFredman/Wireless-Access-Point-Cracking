@@ -96,7 +96,7 @@ How-to: Continue running airodump-ng with the target network's channel and BSSID
 
 4.3 When you see the WPA Handshake, ctrl + C this program.
 
-4.4 Youll see that you have 4 different files on your desktop, well only use the one that ends with *.cap*
+4.4 Youll see that you have 4 different files on your desktop, well only use the one that ends with .cap.
     Inside of it is the 4-way handshake with the hash value of the password.
     
 #### 5. Cracking the Hash:
