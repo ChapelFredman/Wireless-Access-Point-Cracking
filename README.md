@@ -178,7 +178,6 @@ Once the correct password is found, `hashcat` will stop and display it.
 
 --- 
 
-This should work well for GitHub! Let me know if you need further adjustments.
 
 
 
