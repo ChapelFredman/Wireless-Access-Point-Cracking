@@ -103,6 +103,10 @@ How-to: Continue running airodump-ng with the target network's channel and BSSID
 Tools: aircrack-ng or hashcat
 Purpose: To break the hashed password.
 How-to: Use aircrack-ng to attempt a brute-force attack with a wordlist. hashcat can be used for more advanced attacks and GPU acceleration.
+*There are 2 ways we can get the hash value, with aircrack-ng or with hashcat
 
+##### 5.1 Aircrack-ng
+
+5.1.1 
 
  
