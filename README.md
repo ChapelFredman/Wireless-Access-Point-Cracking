@@ -211,7 +211,8 @@ Monitor mode is essential for capturing packets without needing to connect to a 
 ifconfig
 iwconfig
 ```
-- **[Image with Explanation]:** Screenshot of `ifconfig` and `iwconfig` commands showing available network interfaces.
+![ifconfig-blurred](https://github.com/user-attachments/assets/c196636d-492e-45b2-ac58-4e85b9632a49)
+![iwconfig](https://github.com/user-attachments/assets/ae6e5961-4a37-4ac3-be8c-dfc01e4546a0)
 
 #### 1.2 Enable Monitor Mode:
 ```bash
@@ -219,7 +220,8 @@ sudo ifconfig <interface> down
 sudo iwconfig <interface> mode monitor
 sudo ifconfig <interface> up
 ```
-- **[Image with Explanation]:** Screenshot of terminal output showing monitor mode enabled (using `iwconfig`).
+
+![Monitor-mode-enable](https://github.com/user-attachments/assets/bd9136bd-6a11-423b-b3af-212adb8e15cd)
 
 #### 1.3 If you encounter issues, use `airmon-ng`:
 ```bash
@@ -247,16 +249,21 @@ With your wireless card in monitor mode, it’s time to capture network traffic.
 ```bash
 airodump-ng <interface>
 ```
-- **[Image with Explanation]:** Screenshot of `airodump-ng` displaying a list of detected networks with details like BSSID and channel.
+
+![scanning-networks](https://github.com/user-attachments/assets/e3cfa62e-afed-4c09-861c-6921ba9ff519)
+
 
 #### 2.2 Choose your target network. Note down its BSSID and channel.
+
+![scanning-networks-high-bssid](https://github.com/user-attachments/assets/d2329c5e-efa3-429b-a012-13081e417c56)
 
 #### 2.3 Target one access point:
 ```bash
 airodump-ng -c <channel> --bssid <BSSID> -w <output_file> <interface>
 ```
-- **[Image with Explanation]:** Screenshot highlighting the chosen target network, showing the BSSID and channel being used.
+![targeted-acceess-point](https://github.com/user-attachments/assets/1d005a58-6ae3-48c2-a7fa-b0799eb5e421)
 
+![target-point-info](https://github.com/user-attachments/assets/b4c9e305-850e-4c94-97db-0d5e54d2c670)
 ---
 
 ### 3. Perform a De-authentication Attack
