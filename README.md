@@ -237,7 +237,8 @@ sudo airmon-ng check kill
 ```bash
 iwconfig
 ```
-- **[Image with Explanation]:** Screenshot confirming the wireless card is in monitor mode (`iwconfig` output).
+![airmon-ng_iwconfig](https://github.com/user-attachments/assets/7dcf926d-5b64-4a40-a347-a780dd6b0563)
+
 
 ---
 
